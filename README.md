@@ -27,3 +27,9 @@ sudo nmtui
 > allow-hotplug eth0
 >
 > iface eth0 inet dhcp
+
+## Монтирование флешки
+```
+ fdisk -l
+ sudo mount /dev/sdc1 /mnt/usb
+```
