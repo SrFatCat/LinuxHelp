@@ -1,8 +1,9 @@
-#   ыгвщ vcgencmd get_throttled # Питание 0x50000 норма, 0x50005 - плохо
-#	sudo vcgencmd measure_volts # напряжение ядра
-#   sudo vcgencmd measure_temp #температура
+## Общее
+sudo vcgencmd measure_volts # напряжение ядра
+sudo vcgencmd measure_temp #температура
 
-НАЧАЛЬНЫЕ НАСТРОЙКИ
+## НАЧАЛЬНЫЕ НАСТРОЙКИ
+```
 sudo raspi-config
 	При помощи первого пункта данного окна можно сменить пароль пользователя.
 	N2 вводим идентификатор беспроводной сети
@@ -12,16 +13,20 @@ sudo raspi-config
 	I4 Change Wi-fi Country:
 qq	A1 Expand Filesystem
 	P2 SSH
+```
 
-ПОЛЬЗОВАТЕЛЬ
+## ПОЛЬЗОВАТЕЛЬ
+```
 sudo adduser rasberry
 sudo visudo
-	# User privilege specification
-	root  ALL=(ALL:ALL) ALL
-	rasberry   ALL = NOPASSWD: ALL	
-	sudo userdel -r pi
+```
+> #User privilege specification <br/>
+> root  ALL=(ALL:ALL) ALL<br/>
+> rasberry   ALL = NOPASSWD: ALL<br/>
+> sudo userdel -r pi
 	
-ИСПРАВЛЕНИЕ ЛОКАЛИ
+## ИСПРАВЛЕНИЕ ЛОКАЛИ
+```
 sudo dpkg-reconfigure console-setup
 	Управлять в меню вам будут мешать «квадраты», устанавливаем
 	Используемая кодировка в консоли: UTF-8
@@ -31,78 +36,94 @@ sudo dpkg-reconfigure console-setup
 	Fixed или Позволить системе выбрать подходящий шрифт (последний пункт)
 	Размер шрифта: 8x16
 	Finish
+```
 
-СТАТИЧЕСКИЙ IP	
+## СТАТИЧЕСКИЙ IP	
+```
 sudo nano/etc/dhcpcd.conf
+```
+> interface eth0 <br/>
+> static ip_address=192.168.1.14/24<br/>
+> static routers=192.168.1.1<br/>
+> static domain_name_servers=192.168.1.1<br/>
+><br/>
+> interface wlan0<br/>
+> static ip_address=192.168.1.14/24<br/>
+> static routers=192.168.1.1<br/>
+> static domain_name_servers=192.168.1.1<br/>
 
-#interface eth0
-#static ip_address=192.168.1.14/24
-#static routers=192.168.1.1
-#static domain_name_servers=192.168.1.1
- 
-#interface wlan0
-#static ip_address=192.168.1.14/24
-#static routers=192.168.1.1
-#static domain_name_servers=192.168.1.1
-#########################################################################
-#отключить wlan0 для трафика по умолчанию
+### отключить wlan0 для трафика по умолчанию
+```
 crontab -e
-	@reboot sudo ip route del default via 192.168.0.1 dev wlan0
+```
+>	@reboot sudo ip route del default via 192.168.0.1 dev wlan0
 
-
-MQTT
+## MQTT
+```
 sudo apt install mosquitto mosquitto-clients
 sudo mosquitto_passwd -c /etc/mosquitto/passwd <user>
-!!! других юзеров добавлять без -c
+#!!! других юзеров добавлять без -c
+```
 прописать:
+```
 sudo nano /etc/mosquitto/mosquitto.conf
-	allow_anonymous false
-	password_file /etc/mosquitto/passwd
+```
+>	allow_anonymous false <br />
+>	password_file /etc/mosquitto/passwd
 
-BLYNK
+
+## BLYNK
+```
 sudo apt install openjdk-11-jdk-headless -y
 sudo apt install openjdk-11-jdk -y
-java -version
-######### см. последнюю версию 
+java -version #см. последнюю версию 
 wget "https://github.com/blynkkk/blynk-server/releases/download/v0.41.13/server-0.41.13-java8.jar"
 mkdir Blynk
 java -jar server-0.41.13-java8.jar -dataFolder /home/rasberry/Blynk &
 sudo nano /etc/rc.local 
-	java -jar /home/rasberry/server-0.41.13-java8.jar -dataFolder /home/rasberry/Blynk &
-#crontab -e
-#    @reboot java -jar /home/rasberry/server-0.41.13-java8.jar -dataFolder /home/rasberry/Blynk &
-#обновление
-#ps -aux | grep java
+```
+> java -jar /home/rasberry/server-0.41.13-java8.jar -dataFolder /home/rasberry/Blynk &
 
-NAS
-#cat /proc/filesystems #проверка установленных FS
-#sudo modprobe cifs #установка файловой системы
-#sudo ls /lib/modules/$(uname -r)/kernel/fs/cifs/cifs.ko #проверка что версия системы соответствует версии ядра (uname -r)
-#sudo apt reinstall raspberrypi-kernel && sudo apt reinstall raspberrypi-bootloader && sudo reboot #обновление версии ядра
-#sudo apt install samba samba-common-bin smbclient cifs-utils #установка cifs
+```
+crontab -e
+```
+> @reboot java -jar /home/rasberry/server-0.41.13-java8.jar -dataFolder /home/rasberry/Blynk &
+
+## NAS
+```
+cat /proc/filesystems #проверка установленных FS
+sudo modprobe cifs #установка файловой системы
+sudo ls /lib/modules/$(uname -r)/kernel/fs/cifs/cifs.ko #проверка что версия системы соответствует версии ядра (uname -r)
+sudo apt reinstall raspberrypi-kernel && sudo apt reinstall raspberrypi-bootloader && sudo reboot #обновление версии ядра
+sudo apt install samba samba-common-bin smbclient cifs-utils #установка cifs
 sudo mount.cifs //192.168.0.50/Volume_1 /home/rasberry/nas_x -o user=Alex,password=marus14kaW7,vers=1.0,iocharset=utf8
 sudo nano /etc/fstab
-	//192.168.0.50/Volume_1 /home/rasberry/nas_x cifs rw,username=Alex,password=marus14kaW7,vers=1.0,iocharset=utf8 0 0
+```
+>	//192.168.0.50/Volume_1 /home/rasberry/nas_x cifs rw,username=Alex,password=marus14kaW7,vers=1.0,iocharset=utf8 0 0
 
-SAMBA
+### SAMBA
+```
 sudo apt install samba 
 sudo nano /etc/samba/smb.conf
-	[global]
-	wins support = yes
-	...
-	[<ресур>]
-	comment = Shared OPi folder
-	path = </home/opi/opi_samba>
-	browseable = no
-	writeable = Yes
-	only guest = no
-	create mask = 0777
-	directory mask = 0777
-	public = no
+```
+>	[global] <br />
+>	wins support = yes<br />
+>	...<br />
+>	[<ресур>]<br />
+>	comment = Shared OPi folder<br />
+>	path = </home/opi/opi_samba><br />
+>	browseable = no<br />
+>	writeable = Yes<br />
+>	only guest = no<br />
+>	create mask = 0777<br />
+>	directory mask = 0777<br />
+>	public = no<br />
+```	
 sudo smbpasswd -a <username> #системного пользователя. не существующего добавлять нельзя
 sudo service smbd restart
+```
 
-NTP
+### NTP
 sudo apt install ntp
 sudo nano /etc/ntp.conf
 	pool ru.pool.ntp.org iburst
