@@ -23,7 +23,9 @@ sudo visudo
 > #User privilege specification <br/>
 > root  ALL=(ALL:ALL) ALL<br/>
 > rasberry   ALL = NOPASSWD: ALL<br/>
-> sudo userdel -r pi
+```
+sudo userdel -r pi
+```
 	
 ## ИСПРАВЛЕНИЕ ЛОКАЛИ
 ```
