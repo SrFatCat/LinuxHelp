@@ -80,16 +80,17 @@ sudo apt install openjdk-11-jdk-headless -y
 sudo apt install openjdk-11-jdk -y
 java -version #см. последнюю версию 
 wget "https://github.com/blynkkk/blynk-server/releases/download/v0.41.13/server-0.41.13-java8.jar"
+wget "https://github.com/Peterkn2001/blynk-server/releases/download/v0.41.17/server-0.41.17.jar"
 mkdir Blynk
-java -jar server-0.41.13-java8.jar -dataFolder /home/rasberry/Blynk &
+java -jar server-0.41.17.jar -dataFolder /home/bogdan/Blynk &
 sudo nano /etc/rc.local 
 ```
-> java -jar /home/rasberry/server-0.41.13-java8.jar -dataFolder /home/rasberry/Blynk &
+> java -jar /home/bogdan/Blynk/server-0.41.17.jar -dataFolder /home/bogdan/Blynk &
 
 ```
 crontab -e
 ```
-> @reboot java -jar /home/rasberry/server-0.41.13-java8.jar -dataFolder /home/rasberry/Blynk &
+> @reboot java -jar /home/bogdan/Blynk/server-0.41.17.jar -dataFolder /home/bogdan/Blynk &
 
 ## NAS
 ```
