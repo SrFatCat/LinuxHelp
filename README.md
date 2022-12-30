@@ -33,3 +33,11 @@ sudo nmtui
  fdisk -l
  sudo mount /dev/sdc1 /mnt/usb
 ```
+## Убрать пароль sudo
+sudo visudo
+> %sudo ALL=(ALL) NOPASSWD: ALL
+
+## Генерация и копирование ключа
+ssh-keygen
+scp r:/ключ.pub user@host:/home/bogdan/.ssh/
+mv ключ.pub authorized_keys
