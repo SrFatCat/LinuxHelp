@@ -38,6 +38,14 @@ sudo visudo
 > %sudo ALL=(ALL) NOPASSWD: ALL
 
 ## Генерация и копирование ключа
+```bash
 ssh-keygen
 scp r:/ключ.pub user@host:/home/bogdan/.ssh/
 mv ключ.pub authorized_keys
+```
+
+## Проброс порта тунелем
+```bash
+ssh -L 8888:192.168.1.25:22 bogdan@192.168.111.142 -i .\.ssh\smartgate
+# -L порт_на_вызывающем_компе:адрес_в_лок_сети_промежуточного:порт сам_промежуточный_комп
+```
