@@ -61,3 +61,10 @@ find . -mount -type f -size +1G 2>/dev/null`
 #M — в мегабайтах
 #G — в гигабайтах
 ```
+## Зависание update / upgrade
+```
+sudo apt -o Acquire::ForceIPv4=true update
+sudo apt -o Acquire::ForceIPv4=true -y dist-upgrade
+sudo apt autoremove
+sudo apt clean
+```
