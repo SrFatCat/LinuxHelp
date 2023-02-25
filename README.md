@@ -62,9 +62,20 @@ find . -mount -type f -size +1G 2>/dev/null`
 #G — в гигабайтах
 ```
 ## Зависание update / upgrade
-```
+```bash
 sudo apt -o Acquire::ForceIPv4=true update
 sudo apt -o Acquire::ForceIPv4=true -y dist-upgrade
 sudo apt autoremove
 sudo apt clean
 ```
+
+## Тест скорости чтения/записи
+```bash
+# Записать файл на 4G
+sudo dd if=/dev/zero of=tempfile bs=1M count=4096 status=progress 
+# Очистить кеш
+sudo /sbin/sysctl -w vm.drop_caches=3
+# Прочитать файл на 4G
+sudo dd if=tempfile of=/dev/null bs=1M count=4096 status=progress
+```
+
