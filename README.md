@@ -8,6 +8,27 @@ sudo route del default dev wlan0
 sudo route add -net default gw x.x.x.1 dev wlan0 metric xxxx
 ```
 
+## Назначить статический ip
+- [netplan](https://prowebmastering.ru/ubuntu20-04-static-ip.html)
+- dhcp.service
+```bash
+sudo nano /etc/dhcpcd.conf
+```
+> nodhcp
+> static ip_address=192.168.0.10/24
+> static routers=192.168.0.1
+> static domain_name_servers=192.168.0.1
+- interfaces.d
+```bash
+sudo nano /etc/network/interfaces.d/ethernet
+```
+> auto enP4p65s0
+> iface enP4p65s0 inet dhcp
+> auto enP4p65s0:0
+> iface enP4p65s0:0 inet static
+>       address 192.168.1.120
+>       netmask 255.255.255.0
+
 ## Проблемы с wifi RPI
 [взято отсюда](https://mirrobo.ru/network-manager-podklyuchenie-k-wi-fi-debian-ubuntu-raspbian/)
 ```
