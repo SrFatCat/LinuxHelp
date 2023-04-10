@@ -79,3 +79,20 @@ sudo /sbin/sysctl -w vm.drop_caches=3
 sudo dd if=tempfile of=/dev/null bs=1M count=4096 status=progress
 ```
 
+## Увеличить раздел на весь диск
+```bash
+df -h
+# найти корневой раздел - он будет типа /dev/mmcblk1p2
+sudo cfdisk /dev/mmcblk1
+# запустить на этот раздел без номера партиции
+```
+В открывшейся программе <br />
+- В пустом разделе в начале диска создать раздел во весь размер
+- **удалить** корневой раздел /dev/mmcblk1p2
+- на свободном месте создать раздел на весь размер 
+- Write / Quit
+
+```bash
+sudo reboot
+sudo resize2fs /dev/mmcblk1p2
+```
