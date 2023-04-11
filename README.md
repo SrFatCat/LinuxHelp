@@ -137,3 +137,9 @@ sudo cfdisk /dev/mmcblk1
 sudo reboot
 sudo resize2fs /dev/mmcblk1p2
 ```
+
+## Стресс тест
+```bash
+stress-ng -c 8
+btop
+```
