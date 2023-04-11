@@ -9,7 +9,27 @@ sudo route add -net default gw x.x.x.1 dev wlan0 metric xxxx
 ```
 
 ## Назначить статический ip
-- [netplan](https://prowebmastering.ru/ubuntu20-04-static-ip.html)
+- netplan
+```bash
+ ls /etc/netplan/
+ # если нет *-default.yaml значит нето пальто см. дальше
+ sudo nano /etc/netplan/*-default.yaml
+ ```
+ ***
+ ```yaml
+  network: 
+  version: 2
+  renderer: NetworkManager
+  ethernets:
+    eth0:
+      addresses: [192.168.1.120/24]
+      dhcp4: yes
+```     
+***
+```bash
+sudo netplan apply
+# sudo netplan --debug apply
+```
 - dhcp.service
 ```bash
 sudo nano /etc/dhcpcd.conf
