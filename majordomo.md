@@ -1,6 +1,6 @@
 ## Общее
-sudo vcgencmd measure_volts # напряжение ядра
-sudo vcgencmd measure_temp #температура
+`sudo vcgencmd measure_volts` # напряжение ядра <br />
+`sudo vcgencmd measure_temp` #температура <br />
 
 ## НАЧАЛЬНЫЕ НАСТРОЙКИ
 ```
@@ -39,20 +39,6 @@ sudo dpkg-reconfigure console-setup
 	Размер шрифта: 8x16
 	Finish
 ```
-
-## СТАТИЧЕСКИЙ IP	
-```
-sudo nano/etc/dhcpcd.conf
-```
-> interface eth0 <br/>
-> static ip_address=192.168.1.14/24<br/>
-> static routers=192.168.1.1<br/>
-> static domain_name_servers=192.168.1.1<br/>
-><br/>
-> interface wlan0<br/>
-> static ip_address=192.168.1.14/24<br/>
-> static routers=192.168.1.1<br/>
-> static domain_name_servers=192.168.1.1<br/>
 
 ### отключить wlan0 для трафика по умолчанию
 ```
@@ -127,35 +113,42 @@ sudo service smbd restart
 ```
 
 ### NTP
+```
 sudo apt install ntp
 sudo nano /etc/ntp.conf
-	pool ru.pool.ntp.org iburst
-	server ntp2.vniiftri.ru iburst prefer
-	server 0.ru.pool.ntp.org
-	server 1.ru.pool.ntp.org
-	server 2.ru.pool.ntp.org
-	server 3.ru.pool.ntp.org
-	...
-	restrict 192.168.0.0 mask 255.255.255.0
-	broadcast 192.168.0.255
-	broadcast 224.0.1.1
+```
+>	pool ru.pool.ntp.org iburst <br />
+>	server ntp2.vniiftri.ru iburst prefer <br />
+>	server 0.ru.pool.ntp.org <br />
+>	server 1.ru.pool.ntp.org <br />
+>	server 2.ru.pool.ntp.org <br />
+>	server 3.ru.pool.ntp.org <br />
+>	... <br />
+>	restrict 192.168.0.0 mask 255.255.255.0 <br />
+>	broadcast 192.168.0.255 <br />
+>	broadcast 224.0.1.1 <br />
+```
 sudo systemctl restart ntp
-
-MINIDLNA
+```
+### MINIDLNA
+```
 sudo apt install minidlna
 sudo nano /etc/minidlna.conf
-	<#>media_dir=</media/DataY/Torrents>
-	<#>db_dir=...
-	<#>log_dir=...
-	port=8200
-	<#>friendly_name=OrangePi
-	<#>inotify=yes
-	<#>notify_interval=20
+```
+>	<#>media_dir=</media/DataY/Torrents>  <br />
+>	<#>db_dir=... <br />
+>	<#>log_dir=... <br />
+>	port=8200 <br />
+>	<#>friendly_name=OrangePi <br />
+>	<#>inotify=yes <br />
+>	<#>notify_interval=20 <br />
+```	
 ip link set eth1 multicast on
 ip link set lo multicast on
 sudo service minidlna restart
-
-VPNKI
+```
+### VPNKI
+```
 sudo apt-get install -y pptp-linux #Установим пакет pptp-linux
 sudo pptpsetup --create vpnki --server msk.vpnki.ru --username <имя туннеля> --password <пароль туннеля> # Создадим соединени #Подключим туннель
 sudo pon vpnki updetach
@@ -164,33 +157,41 @@ ping 172.16.0.1 # Проверим пинг адреса VPNKI
 sudo poff vpnki # Отключим туннель
 ifconfig -s # Проверим отключение ppp0
 sudo nano -B /etc/rc.local # Добавим установление PPTP туннеля при загрузке компьютера, открываем файл
-	# И перед "exit 0" вставляем туда текст
-	# vpn="on"
-	# if [ $vpn = on ]; then
-	# printf "\nVPN connection to VPNKI\n"
-	pon vpnki updetach & 
-	sleep 5
-	sudo route add -net "172.16.0.0/16" dev "ppp0" & #Маршрут к сети VPNKI
-	# sudo route add -net "192.168.100.0/24" dev "ppp0" #Например маршрут к "другому" вашему туннелю (в домашнюю сеть 192.168.100.0/24)
-	# printf "Netstat output of all PPTP sockets\n"
-	# netstat -a | grep "/var/run/pptp/"
-	# fi
+```
+>	И перед "exit 0" вставляем туда текст <br />
+>	vpn="on" <br />
+>	if [ $vpn = on ]; then <br />
+>	printf "\nVPN connection to VPNKI\n" <br />
+>	pon vpnki updetach &  <br />
+>	sleep 5 <br />
+>	sudo route add -net "172.16.0.0/16" dev "ppp0" & #Маршрут к сети VPNKI <br />
+>	sudo route add -net "192.168.100.0/24" dev "ppp0" #Например маршрут к "другому" вашему туннелю (в домашнюю сеть 192.168.100.0/24) <br />
+>	printf "Netstat output of all PPTP sockets\n" <br />
+>	netstat -a | grep "/var/run/pptp/" <br />
+>	fi <br />
+```
 sudo /etc/rc.local # Тестируем работу local.rc без перезагрузки
 sudo systemctl status rc-local # Тестируем работу local.rc без перезагрузки
 sudo systemctl restart rc-local 
 sudo journalctl -u rc-local
-sudo nano -B /etc/ppp/peers/vpnki # В случае обрыва связи нам потребуется автоматическая переустановка соединения, для этого откройте файл
-	# В конец файла добавьте
-	persist 
-	maxfail 0 
-	holdoff 10
-sudo nano -B /etc/ppp/ip-up.d/routeadd # В случае обрыва связи и ее восстановлении нам также потребуется автоматически прописать маршруты к сети VPNKI и к вашей "другой" сети. Для этого создайте файл
-	#!/bin/sh -e
-	route add -net "172.16.0.0/16" dev "ppp0" #Маршрут к сети VPNKI
-	# route add -net "192.168.100.0/24" dev "ppp0" #Например маршрут к вашей "другой" сети 192.168.100.0/24 (если такая существует через сеть VPNKI)
-sudo chmod 755 /etc/ppp/ip-up.d/routeadd # Измените права на исполнение файла при поднятии интерфейса ppp0
 
-RTL_433
+sudo nano -B /etc/ppp/peers/vpnki # В случае обрыва связи нам потребуется автоматическая переустановка соединения, для этого откройте файл
+```
+>	#В конец файла добавьте  <br />
+>	persist  <br />
+>	maxfail 0  <br />
+>	holdoff 10 <br />
+```
+sudo nano -B /etc/ppp/ip-up.d/routeadd # В случае обрыва связи и ее восстановлении нам также потребуется автоматически прописать маршруты к сети VPNKI и к вашей "другой" сети. Для этого создайте файл
+```
+>	#!/bin/sh -e  <br />
+>	route add -net "172.16.0.0/16" dev "ppp0" #Маршрут к сети VPNKI  <br />
+>	#route add -net "192.168.100.0/24" dev "ppp0" #Например маршрут к вашей "другой" сети 192.168.100.0/24 (если такая существует через сеть VPNKI)  <br />
+```
+sudo chmod 755 /etc/ppp/ip-up.d/routeadd # Измените права на исполнение файла при поднятии интерфейса ppp0
+```
+
+### RTL_433
 cd /usr/src
 sudo apt install git git-core cmake libusb-1.0-0-dev
 sudo git clone git://git.osmocom.org/rtl-sdr.git
