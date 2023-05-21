@@ -1,6 +1,16 @@
 ## Общее
 `sudo vcgencmd measure_volts` # напряжение ядра <br />
 `sudo vcgencmd measure_temp` #температура <br />
+`sudo nano /boot/config.txt` #Configure a GPIO pin to control a cooling fan.<br />
+> Load:   dtoverlay=gpio-fan,<param>=<val><br />
+> Params: gpiopin                 GPIO used to control the fan (default 12)<br />
+>        temp                    Temperature at which the fan switches on, in<br />
+>                                millicelcius (default 55000)<br />
+>        hyst                    Temperature delta (in millicelcius) below<br />
+>                                temp at which the fan will drop to minrpm<br />
+>                                (default 10000)<br />
+><br />
+>dtoverlay=gpio-fan,temp=65000 <br />
 
 ## НАЧАЛЬНЫЕ НАСТРОЙКИ
 ```
@@ -25,6 +35,7 @@ sudo visudo
 > rasberry   ALL = NOPASSWD: ALL<br/>
 ```
 sudo userdel -r pi
+passwd #сменить пароль пользователя	
 ```
 	
 ## ИСПРАВЛЕНИЕ ЛОКАЛИ
@@ -192,6 +203,7 @@ sudo chmod 755 /etc/ppp/ip-up.d/routeadd # Измените права на ис
 ```
 
 ### RTL_433
+```bash	
 cd /usr/src
 sudo apt install git git-core cmake libusb-1.0-0-dev
 sudo git clone git://git.osmocom.org/rtl-sdr.git
@@ -209,26 +221,35 @@ sudo nano /etc/modprobe.d/no-rtl.conf
 	blacklist rtl2830
 sudo reboot
 rtl_test -t
-#если не исполняется скрипт
+#если не исполняется скрипт (так и не понял о чем. У меня устройство находит, но пишет в конце абортед и он работает)
 #lsusb
 # получаем вида Bus 005 Device 003: ID 0bda:2838 Realtek Semiconductor Corp. RTL2838 DVB-T
 #sudo nano /etc/udev/rules.d/rtl-sdr.rules
 #	SUBSYSTEMS=="usb", ATTRS{idVendor}=="0bda", ATTRS{idProduct}=="2838", MODE:="0666"
 #sudo service udev restart
 #sudo reboot
-sudo apt-get install libtool libusb-1.0.0-dev librtlsdr-dev
-cd /usr/src
-sudo git clone https://github.com/merbanan/rtl_433.git
-cd rtl_433/ && sudo mkdir build && cd build && sudo cmake ../ && sudo make
-sudo make install
+sudo apt install libtool librtlsdr-dev rtl-433
+#компиляция из исходников если в репе нет rtl-433
+#cd /usr/src
+#sudo git clone https://github.com/merbanan/rtl_433.git
+#cd rtl_433/ && sudo mkdir build && cd build && sudo cmake ../ && sudo make
+#sudo make install
 cd /usr/local/etc/rtl_433
 sudo cp rtl_433.exmple.conf rtl_433.conf
 sudo nano rtl_433.conf
 	decoder n=PIR815K,m=OOK_PWM,s=352,l=1116,r=1180,g=0,t=200,bits=25,get=@0:{25}:id #добавляем поддержку ДД PIR815K
+nano /home/bogdan/rtl433_test.sh 	
+	#!/bin/bash
+	if [[ "$(ps -A | grep rtl_433)" != *rtl_433* ]]; then
+	    echo "exec"
+	    sudo rtl_433 -c /home/bogdan/rtl_433.conf |  mosquitto_pub -h 192.168.0.60 -u bogdan -P marus14kaMQT9 -t rtl_433 -l&
+	fi	
 crontab -e 
-	@reboot sudo rtl_433 -f 433920000 -s 250000 -F json |  mosquitto_pub -u bogdan -P marus14kaMQT9 -t rtl_433 -l&
+	@reboot /home/bogdan/rtl433_test.sh
+	*/1 * * * * /home/bogdan/rtl433_test.sh
+```
 
-ZIGBEE2MQTT
+### ZIGBEE2MQTT
 lsusb #убедиться, что есть в устройствах
 ls -l /dev/serial/by-id #убедиться, что /dev/ttyACM0 
 sudo usermod -a -G dialout <user> #дать права на порт (не забыть перезойти)
@@ -266,7 +287,7 @@ sudo systemctl enable zigbee2mqtt.service
 #rm -rf node_modules
 #npm install
 
-MAJORDOMO
+# MAJORDOMO
 https://kb.mjdm.ru/kak-ustanovit-majordomo-na-linux/
 #mysql 
 sudo apt install mariadb-server mariadb-client -y
@@ -303,7 +324,7 @@ sudo rm -f /var/www/html/index.html
 sudo nano /etc/apache2/apache2.conf
 		ServerName localhost
 sudo apache2ctl restart		
-#PHP
+# PHP
 sudo apt install php php-cgi php-cli php-pear php-mysql php-mbstring php-xml -y	
 sudo apt install curl libcurl4 libcurl3-dev php-curl -y
 sudo apt autoremove
@@ -324,7 +345,8 @@ sudo nano /etc/php/7.3/apache2/php.ini
 sudo nano /etc/php/7.3/cli/php.ini
 	# меняем тоже, что и в файле выше
 sudo /etc/init.d/apache2 restart
-#MAJORDOMO
+	
+# MAJORDOMO
 mkdir ~/majordomo && cd ~/majordomo && wget https://github.com/sergejey/majordomo/archive/master.zip
 unzip master.zip && sudo cp -rp ~/majordomo/majordomo-master/* /var/www/html && sudo cp -rp ~/majordomo/majordomo-master/.htaccess /var/www/html && rm -rf ~/majordomo
 sudo find /var/www/html/ -type f -exec chmod 0644 {} \;
