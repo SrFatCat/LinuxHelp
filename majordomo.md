@@ -106,8 +106,6 @@ sudo nano /etc/fstab
 sudo apt install samba 
 sudo nano /etc/samba/smb.conf
 ```
->	[global] <br />
->	wins support = yes<br />
 >	...<br />
 >	[<ресур>]<br />
 >	comment = Shared OPi folder<br />
