@@ -122,7 +122,25 @@ sudo nano /etc/samba/smb.conf
 sudo smbpasswd -a <username> #системного пользователя. не существующего добавлять нельзя
 sudo service smbd restart
 ```
-
+### NFS взамен SAMBA
+```bash
+sudo apt install nfs-kernel-server	
+sudo nano /etc/exports	
+	/home   192.168.0.0/255.255.255.0(rw,sync,no_root_squash,no_subtree_check)
+	#для указания конкретного адреса вроде надо писать 192.168.0.1/255.255.255.255
+	#специальные шары создаются с chown nobody:nogroup и тогда no_root_squash нужно не указывать, в обычных папках указывать обязательно
+sudo systemctl restart nfs-kernel-server	
+```	
+В винде NFS Client устанавливать Приложения -> Дополнительные компоненты -> Другие компоненты Windows -> Службы для NFS<br />
+Для записи в обычные шары под админом в реестре HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\ClientForNFS\CurrentVersion\Default создать <br />
+DWORD32 AnonymousUid = 0 и AnonymousGid = 0 (запись будет под рутом) и перезапустить службу "Клиент для NFS из оснастки 'Службы для NFS' (nfsmgmt.msc)" <br /><br />
+Чтобы писать [под пользователем](https://meandubuntu.ru/2014/04/подключение-nfs-обычным-пользователем/)	
+```bash
+sudo nano /etc/exports	
+	/home   192.168.0.0/255.255.255.0(rw,sync,no_subtree_check,all_squash,anonuid=1000,anongid=1000)
+	#где uid:gid под кем писать можно посмотреть cat /etc/passwd
+```	
+	
 ### NTP
 ```
 sudo apt install ntp
