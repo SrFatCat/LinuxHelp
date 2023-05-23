@@ -1,0 +1,27 @@
+## Настройка
+
+### nano
+```bash
+nano ~/.nanorc
+  set tabsize 4
+  set tabstospaces
+```
+
+### ПОЛЬЗОВАТЕЛЬ
+```bash
+sudo visudo
+    #%sudo  ALL=(ALL:ALL) ALL
+    %sudo   ALL = NOPASSWD: ALL
+sudo adduser god
+sudo usermod -a -G sudo god
+exit
+#перезайти ssh под god
+sudo pkill -9 -u orangepi # убить процессы orangepi
+sudo usermod -l bogdan orangepi #переименовать пользователя
+sudo usermod -d /home/bogdan -m bogdan #переименовать домашний каталог
+exit
+#перезайти ssh под bogdan
+sudo userdel -r god
+passwd #сменить пароль пользователя	
+```
+
