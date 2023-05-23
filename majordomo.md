@@ -24,19 +24,6 @@ sudo raspi-config
 qq	A1 Expand Filesystem
 	P2 SSH
 ```
-
-## ПОЛЬЗОВАТЕЛЬ
-```
-sudo adduser rasberry
-sudo visudo
-```
-> #User privilege specification <br/>
-> root  ALL=(ALL:ALL) ALL<br/>
-> rasberry   ALL = NOPASSWD: ALL<br/>
-```
-sudo userdel -r pi
-passwd #сменить пароль пользователя	
-```
 	
 ## ИСПРАВЛЕНИЕ ЛОКАЛИ
 ```
