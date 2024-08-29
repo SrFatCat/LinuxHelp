@@ -4,6 +4,7 @@
 ```bash
 git config --global user.name "Алексей Богдан"
 git config --global user.email "abogdan@angelsit.ru"
+git config --global core.autocrlf false
 ```
 ## Создать новый репозиторий
 ```bash
