@@ -44,6 +44,11 @@ git add .
 git commit -m "Initial commit"
 git push -u origin master
 ```
+## Откат изменений в текущем коммите
+```
+git reset
+```
+
 # Подмодули GIT
 ## Создание
 ```bash
