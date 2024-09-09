@@ -46,7 +46,7 @@ git push -u origin master
 ```
 ## Откат изменений в текущем коммите
 ```
-git reset
+git reset --hard
 ```
 
 # Подмодули GIT
