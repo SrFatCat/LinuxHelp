@@ -5,6 +5,8 @@
 git config --global user.name "Алексей Богдан"
 git config --global user.email "abogdan@angelsit.ru"
 git config --global core.autocrlf false
+# Если в windows вместо русских имен коды символов
+git config --global core.quotePath false
 ```
 ## Создать новый репозиторий
 ```bash
